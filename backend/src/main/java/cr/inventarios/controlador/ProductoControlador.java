@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("inventario-app") // http://localhost:8080/inventario-app
@@ -53,5 +55,18 @@ public class ProductoControlador {
         // Guardar información
         this.productoServicio.guardarProducto(producto);
         return ResponseEntity.ok(producto);
+    }
+
+    @DeleteMapping("/productos/{id}")
+    public ResponseEntity<Map<String, Boolean>> eliminarProducto(@PathVariable int id) {
+        Producto producto = this.productoServicio.buscarProductoPorId(id);
+        if (producto == null) {
+            throw new RecursoNoEncontradoExcepcion("No se encontró el id: " + id);
+        } else {
+            this.productoServicio.eliminarProductoPorId(producto.getIdProducto());
+            Map<String, Boolean> respuesta = new HashMap<>();
+            respuesta.put("eliminado", Boolean.TRUE);
+            return ResponseEntity.ok(respuesta);
+        }
     }
 }
